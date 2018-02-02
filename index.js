@@ -37,6 +37,24 @@ class Bot extends EventEmitter {
     })
   }
 
+  getMember (id, cb) {
+    return request({
+      method: 'GET',
+      uri: `https://graph.facebook.com/v2.6/${id}`,
+      qs: this._getQs({fields: 'first_name,last_name,picture,locale,email'}),
+      json: true
+    })
+    .then(body => {
+      if (body.error) return Promise.reject(body.error)
+      if (!cb) return body
+      cb(null, body)
+    })
+    .catch(err => {
+      if (!cb) return Promise.reject(err)
+      cb(err)
+    })
+  }
+
   sendMessage (recipient, payload, cb) {
     return request({
       method: 'POST',
